@@ -1,16 +1,18 @@
-name: CI
+name: Build and Deploy
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
         run: |
@@ -23,7 +25,8 @@ jobs:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }} # Replace with your path
 
-      - uses: actions/cache@v2
+      - name: Cache Buildozer dependencies
+        uses: actions/cache@v2
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
@@ -38,5 +41,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: package
+          name: packaged-app
           path: ${{ steps.buildozer.outputs.filename }}
